@@ -16,7 +16,6 @@ import edu.kh.jdbc.dto.User;
 public class UserDaoImpl implements UserDao{
 
 	// 필드
-	
 	// JDBC 객체 참조 변수 + Properties 참조 변수 선언
 	private Statement stmt;
 	private PreparedStatement pstmt;
@@ -37,17 +36,18 @@ public class UserDaoImpl implements UserDao{
 			String filePath = 
 					JDBCTemplate.class
 					.getResource("/edu/kh/jdbc/sql/sql.xml").getPath();
+			
 			// 지정된 경로의 XML 파일 내용을 읽어와
-			// Properties 객체에 K:V세팅
+			// Properties 객체에 K:V 세팅
 			prop = new Properties();
 			prop.loadFromXML(new FileInputStream(filePath));
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		
 	}
+
+
 	@Override
 	public int insertUser(Connection conn, User user) throws Exception {
 		
@@ -56,8 +56,8 @@ public class UserDaoImpl implements UserDao{
 		
 		try {
 			// 2. SQL 작성 
-			// -> Properties를 이용해 외부 sql.xml 파일에서
-			//    읽어온 sql 이용   			
+			// -> Properties를 이용해 외부 sql.xml파일에서
+			//    읽어온 sql 이용
 			String sql = prop.getProperty("insertUser");
 			
 			// 3. PreparedStatement 생성
@@ -69,19 +69,83 @@ public class UserDaoImpl implements UserDao{
 			pstmt.setString(3, user.getUserName());
 			
 			// 5. SQL(INSERT) 수행(executeUpdate()) 후
-			//    결과(삽입된 행의 개수, int) 반환
+			//   결과(삽입된 행의 개수, int) 반환
 			result = pstmt.executeUpdate();
 			
-			
-			
-		}finally {
+		} finally {
 			// 6. 사용한 JDBC 객체 자원 반환(close)
 			close(pstmt);
-			
 		}
 		
 		// 결과 반환
 		return result;
+	}
+
+
+	@Override
+	public int idCheck(Connection conn, String userId) throws Exception {
+		
+		int result = 0;
+		
+		try {
+			String sql = prop.getProperty("idCheck");
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userId);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) { // 결과가 1행밖에 없어서 if 사용
+				result = rs.getInt(1); // 조회 결과 1번 컬럼값
+				
+			}
+			
+			
+		} finally {
+			close(rs);
+			close(pstmt);
+		}
+		
+		
+		return result;
+	}
+
+
+	@Override
+	public User login(Connection conn, String userId, String userPw) throws Exception {
+
+		// 결과 저장용 변수 선언
+		User loginUser = null;
+		
+		try {
+			String sql = prop.getProperty("login");
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, userId);
+			pstmt.setString(2, userPw);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				int userNo = rs.getInt("USER_NO");
+				String id = rs.getString("USER_ID");
+				String pw = rs.getString("USER_PW");
+				String userName = rs.getString("USER_NAME");
+				String enrollDate = rs.getString("ENROLL_DATE");
+				
+				loginUser = new User(userNo, userId, userPw,userName,enrollDate);
+			}
+
+
+			
+			
+		}finally {
+			
+		}
+		
+		return loginUser;
 	}
 	
 	
