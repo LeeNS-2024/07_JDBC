@@ -40,6 +40,12 @@
 		AND	  USER_PW = ?
 	 </entry>
 	 
+	 <!-- 전체 조회 -->
+	 <entry key="selectAll">
+	 	SELECT *
+		FROM TB_USER
+	 </entry>
+	 
 	 
 	 
 
