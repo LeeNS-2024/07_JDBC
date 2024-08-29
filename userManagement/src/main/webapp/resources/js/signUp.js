@@ -27,6 +27,6 @@ userId.addEventListener("input", e => { // e > 이벤트함수
       check.innerText = "이미 사용중인 아이디 입니다";
     }
 
-  }); 
+  });
 
 });
