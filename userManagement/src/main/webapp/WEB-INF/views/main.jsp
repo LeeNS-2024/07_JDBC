@@ -43,10 +43,10 @@
     <button id="logout">Logout</button>
 
     <hr>
-    
+
     <h3>메뉴</h3>
     <ul>
-       <%-- 
+      <%-- 
        - 클릭 시 /selectAll GET방식 요청 
        - 모든 사용자 회원번호, id, pw, name, enrollDate 조회
        - 조회 결과를 request scope에 세팅하여
@@ -74,6 +74,7 @@
     <%-- session에 존재하는 message 제거 --%>
     <c:remove var="message" scope="session" />
   </c:if>
+
 
   <script src="/resources/js/main.js"></script>
 </body>

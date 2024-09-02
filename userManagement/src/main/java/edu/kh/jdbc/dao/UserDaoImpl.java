@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import edu.kh.jdbc.common.JDBCTemplate;
@@ -97,24 +99,21 @@ public class UserDaoImpl implements UserDao{
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) { // 결과가 1행밖에 없어서 if 사용
-				result = rs.getInt(1); // 조회 결과 1번 컬럼값
-				
+				result = rs.getInt(1); // 조회 결과 1번 컬럼 값
 			}
-			
 			
 		} finally {
 			close(rs);
 			close(pstmt);
 		}
 		
-		
 		return result;
 	}
-
-
+	
+	
 	@Override
 	public User login(Connection conn, String userId, String userPw) throws Exception {
-
+		
 		// 결과 저장용 변수 선언
 		User loginUser = null;
 		
@@ -122,7 +121,6 @@ public class UserDaoImpl implements UserDao{
 			String sql = prop.getProperty("login");
 			
 			pstmt = conn.prepareStatement(sql);
-			
 			pstmt.setString(1, userId);
 			pstmt.setString(2, userPw);
 			
@@ -130,28 +128,176 @@ public class UserDaoImpl implements UserDao{
 			
 			if(rs.next()) {
 				int userNo = rs.getInt("USER_NO");
-				String id = rs.getString("USER_ID");
-				String pw = rs.getString("USER_PW");
-				String userName = rs.getString("USER_NAME");
-				String enrollDate = rs.getString("ENROLL_DATE");
+				String id  = rs.getString("USER_ID");
+				String pw  = rs.getString("USER_PW");
+				String userName  = rs.getString("USER_NAME");
+				String enrollDate  = rs.getString("ENROLL_DATE");
 				
-				loginUser = new User(userNo, userId, userPw,userName,enrollDate);
+				loginUser 
+					= new User(userNo, userId, userPw, userName, enrollDate);
 			}
-
-
 			
 			
 		}finally {
-			
+			close(rs);
+			close(pstmt);
 		}
 		
 		return loginUser;
 	}
 	
 	
+	@Override
+	public List<User> selectAll(Connection conn) throws Exception {
+		
+		// 결과 저장용 변수 선언
+		List<User> userList = new ArrayList<User>();
+		
+		try {
+			String sql = prop.getProperty("selectAll");
+			
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				int userNo = rs.getInt("USER_NO");
+				String userId  = rs.getString("USER_ID");
+				String userPw  = rs.getString("USER_PW");
+				String userName  = rs.getString("USER_NAME");
+				String enrollDate  = rs.getString("ENROLL_DATE");
+				
+				User user 
+					= new User(userNo, userId, userPw, userName, enrollDate);
+				
+				userList.add(user);
+			}
+			
+		}finally {
+			close(rs);
+			close(stmt);
+		}
+		
+		return userList;
+	}
 	
 	
 	
+	@Override
+	public List<User> search(Connection conn, String searchId) throws Exception {
+	
+		// ArrayList 객체를 미리 생성하는 이유
+		// == 조회된 결과를 추가(add)해서 묶어서 반환하기 위해
+		List<User> userList = new ArrayList<User>();
+		
+		try {
+			String sql = prop.getProperty("search");
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, searchId); // '%검색어%'
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				int userNo = rs.getInt("USER_NO");
+				String userId  = rs.getString("USER_ID");
+				String userPw  = rs.getString("USER_PW");
+				String userName  = rs.getString("USER_NAME");
+				String enrollDate  = rs.getString("ENROLL_DATE");
+				
+				User user 
+					= new User(userNo, userId, userPw, userName, enrollDate);
+				
+				userList.add(user);
+			}
+			
+		}finally {
+			close(rs);
+			close(pstmt);
+		}
+		
+		return userList;
+	}
+	
+	@Override
+	public User selectUser(Connection conn, String userNo) throws Exception {
+		
+		User user = null;
+		
+		try {
+			String sql = prop.getProperty("selectUser");
+			
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, userNo);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				int no = rs.getInt("USER_NO");
+				String userId  = rs.getString("USER_ID");
+				String userPw  = rs.getString("USER_PW");
+				String userName  = rs.getString("USER_NAME");
+				String enrollDate  = rs.getString("ENROLL_DATE");
+				
+				user = new User(no, userId, userPw, userName, enrollDate);
+			}
+			
+		}finally {
+			close(rs);
+			close(pstmt);
+		}
+		
+		return user;
+	}
+	
+	
+	@Override
+	public int deleteUser(Connection conn, int userNo) throws Exception {
+		
+		// 결과 저장용 변수
+		int result = 0; // delete 결과 행 개수 저장
+		
+		try {
+			String sql = prop.getProperty("deleteUser");
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, userNo);
+			
+			// DML은 executeUpdate() 호출
+			result = pstmt.executeUpdate();
+			
+		}finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+	
+	
+	@Override
+	public int updateUser(Connection conn, User user) throws Exception {
+		
+		// 결과 저장용 변수
+		int result = 0; // delete 결과 행 개수 저장
+		
+		try {
+			String sql = prop.getProperty("updateUser");
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, user.getUserPw());
+			pstmt.setString(2, user.getUserName());
+			pstmt.setInt(3, user.getUserNo());
+			
+			// DML은 executeUpdate() 호출
+			result = pstmt.executeUpdate();
+			
+		}finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
 	
 	
 }

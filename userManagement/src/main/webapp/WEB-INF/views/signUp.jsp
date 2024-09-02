@@ -5,12 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>사용자 등록</title>
-</head>
-<body>
 
   <%-- css 파일 연결 (webapp 폴더를 기준으로 경로 작성) --%>
   <link rel="stylesheet" href="/resources/css/signUp.css">
-
+</head>
+<body>
   <h1>사용자 등록</h1>
 
   <form action="/signUp" method="POST" id="signUpForm">
@@ -19,6 +18,7 @@
 
       <%-- 아이디 중복 여부 확인해서 메시지 출력 --%>
       <span id="check"></span>
+
     </div>
     <div>
       PW : <input type="password" name="userPw">
@@ -33,6 +33,6 @@
 
 
   <%-- js 파일 연결 (webapp 폴더를 기준으로 경로 작성) --%>
-  <script src="resources/js/signUp.js"></script>
+  <script src="/resources/js/signUp.js"></script>
 </body>
 </html>

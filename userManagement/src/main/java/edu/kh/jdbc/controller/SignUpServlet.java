@@ -49,23 +49,23 @@ public class SignUpServlet extends HttpServlet {
 			// 서비스(INSERT) 호출 후 
 			// 결과(삽입된 행의 개수, int) 반환 받기
 			UserService service = new UserServiceImpl();
-			
 			int result = service.insertUser(user);
 			
 			
 			// 결과에 따라 응답 방법 처리
 			String message = null;
 			
-			if(result > 0) message = userId + "사용자 등록 성공";
-			else		   message = "등록 실패";
+			if(result > 0)	message = userId + " 사용자 등록 성공";
+			else			message = "등록 실패";
 			
 			// page, request, session, application 중
 			// session을 이용해서 message 값 전달
-			HttpSession session = req.getSession();
+			HttpSession session = req.getSession(); 
 			session.setAttribute("message", message);
 			
 			// 메인 페이지로 리다이렉트(재요청)
 			resp.sendRedirect("/");
+			
 			
 			
 		}catch (Exception e) {

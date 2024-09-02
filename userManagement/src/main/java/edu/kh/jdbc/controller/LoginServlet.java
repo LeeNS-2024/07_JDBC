@@ -29,17 +29,16 @@ public class LoginServlet extends HttpServlet{
 			
 			User loginUser = service.login(userId, userPw);
 			
-			
 			// session객체 얻어오기
-			HttpSession session = req.getSession();
+			HttpSession session = req.getSession(); 
 			
 			// 로그인 성공 시(조회 결과가 있는 경우)
 			// session scope에 로그인된 회원의 정보를 세팅
 			// + 만료시간 설정
 			if(loginUser != null) {
 				session.setAttribute("loginUser", loginUser);
-				
 				session.setMaxInactiveInterval(1800); // 초단위, 30분
+			
 			} else { // 로그인 실패
 				session.setAttribute("message", "ID 또는 PW 불일치");
 			}
@@ -50,10 +49,6 @@ public class LoginServlet extends HttpServlet{
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-	
-	
-	
 	
 	}
 }
